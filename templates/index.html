@@ -1,0 +1,60 @@
+{% extends "layout.html" %}
+{% block head %}
+<script src="{{ url_for('static', filename='js/main.js') }}" > </script>
+{% endblock %}
+
+{% block body %} 
+
+<div class=row>
+    <div class="span12">
+        <figure style="height: 400px;" id="catSpenditure"></figure>
+    </div>
+</div>
+<hr>
+<div class=row>
+    <div class="span6">
+        <p>TakeAway</p>
+        <hr>
+        <figure id="takeAwayHistory"></figure>
+    </div>
+    <div class="span6">
+        <p>Clothes</p>
+        <hr>
+        <figure id="clothesHistory"></figure>
+    </div>
+</div>
+<div class=row> 
+    <div class="span6">
+        <p>Coffee</p>
+        <hr>
+        <figure id="coffeHistory"></figure>
+    </div>
+
+    <div class="span6">
+        <p>Apartment</p>
+        <hr>
+        <figure id="aptHistory"></figure>
+    </div>
+</div>
+<div class=row> 
+    <div class="span4">
+        <p>Beer</p>
+        <hr>
+        <figure id="beerHistory"></figure>
+    </div>
+    <div class="span4">
+        <p>Deposits</p>
+        <hr>
+        <figure id="depositHistory"></figure>
+    </div>
+    <div class="span4">
+        <p>Other</p>
+        <hr>
+        <figure id="otherHistory"></figure>
+    </div>
+</div>
+<script>
+var type_spending = {{ type_spending|tojson|safe }};
+var type_histograms = {{ type_histograms|tojson|safe }};
+</script>
+{% endblock %}

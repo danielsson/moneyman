@@ -1,0 +1,58 @@
+<!doctype html>
+<html>
+<head>
+<title>Flaskr</title>
+<link rel=stylesheet type=text/css href="{{ url_for('static', filename='css/bootstrap.min.css') }}">
+<link rel=stylesheet type=text/css href="{{ url_for('static', filename='css/xcharts.css') }}">
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+<script src="http://d3js.org/d3.v2.min.js"></script>
+<script src="{{ url_for('static', filename='js/bootstrap.min.js') }}" ></script>
+<script src="{{ url_for('static', filename='js/xcharts.min.js') }}" > </script>
+{% block head %}{% endblock %}
+<style>
+  
+  .type1 .badge {background-color: #295EFF;} /* Takeout */
+  .type2 .badge {background-color: #FF66D9;} /* Clothes */
+  .type3 .badge {background-color: #66D9FF;} /* Coffee */
+  .type4 .badge {background-color: #FFC929;} /* Apartment */
+  .type5 .badge {background-color: #222673;} /* Beer */
+  .type6 .badge {background-color: #8CFF66;} /* Deposits */
+  .type6 .badge {background-color: #FFD966;} /* Other */
+
+  figure {margin: 0;}
+
+  .span6 figure, .span4 figure {height: 150px;}
+
+</style>
+</head>
+<body>
+<div class=page>
+
+  <div class="container">
+    <div class="masthead">
+      <ul class="nav nav-pills pull-right">
+    <li class="active"><a href="/">Home</a></li>
+    <li><a href="{{ url_for('list') }}">Transactions</a></li>
+    <li><a href="{{ url_for('upload') }}">Upload CSV</a></li>
+      </ul>
+       <div class=metanav>
+    {% if not session.logged_in %}
+      <a href="">log in</a>
+    {% else %}
+      <a href="">log out</a>
+    {% endif %}
+      </div>
+      <h3 class="muted">Moneyman</h3>
+    </div>
+
+    <hr>
+
+    {% for message in get_flashed_messages() %}
+      <div class="alert alert-info">{{ message }}</div>
+    {% endfor %}
+
+    {% block body %}{% endblock %}
+  </div>
+</div>
+</body>
+</html>
