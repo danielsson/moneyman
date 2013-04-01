@@ -11,6 +11,36 @@
     </div>
 </div>
 <hr>
+
+<div class="row">
+    <div class="span2">
+        <h5>&nbsp;</h5>
+        <p class="lead">This Month:</p>
+    </div>
+    <div class="span2">
+        <h5>Takeout</h5>
+        <p class="lead">{{ cool_stats.total_takeout }}</p>
+    </div>
+    <div class="span2">
+        <h5>Coffee</h5>
+        <p class="lead">{{ cool_stats.total_coffee }}</p>
+    </div>
+    <div class="span2">
+        <h5>Income</h5>
+        <p class="lead">{{ cool_stats.total_income }}</p>
+    </div>
+    <div class="span2">
+        <h5>Expenses</h5>
+        <p class="lead">{{ cool_stats.total_expenses }}</p>
+    </div>
+    <div class="span2">
+        <h5>Average transaction</h5>
+        <p class="lead">{{ cool_stats.avg_spending|int }}</p>
+    </div>
+    
+</div>
+
+<hr>
 <div class=row>
     <div class="span6">
         <p>TakeAway</p>

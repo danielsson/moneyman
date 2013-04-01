@@ -38,6 +38,8 @@ nosetests.xml
 
 *.sublime*
 
-predictor/*.pkl*
+*.pkl*
 predictor/export.csv
 moneyman.db
+
+*.csv

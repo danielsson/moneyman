@@ -98,14 +98,17 @@ $(document).ready(function() {
 
 
 	if(window.location.hash.length) {
-		parts = window.location.hash().substr(1).split(",");
+		parts = window.location.hash.substr(1).split(",");
 		try {
 			state.type = parts[0] || state.type;
 			state.len = parts[1] || state.len;
 			state.duration = parts[2] || state.duration;
+
+			$btnTypes.eq(state.type - 1).parent().addClass('active').siblings().removeClass('active');
 		} catch (e) {
 			state = new ChartState();
 			detailChart.state = state;
+			console.log(e)
 		}
 
 	}

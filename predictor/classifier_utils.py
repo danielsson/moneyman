@@ -22,7 +22,6 @@ def train_classifier_with_csv(path):
             #Clean up; len(X) and len(target) must equal
             if len(X) != len(target):
                 X.pop()
-            print X[-1]
 
         clf = TransactionClassifier()
 

@@ -34,7 +34,7 @@ def get_monthly_spending(db_query, num_months):
 
     retval = {
         "xScale": "ordinal",
-        "yScale": "linear",
+        "yScale": "exponential",
         "type": "bar",
         "main": datasets,
     }
@@ -57,7 +57,7 @@ def get_history_for_type(db_query, type, num_time, time_len):
     retval = {
         "xScale": "time",
         "yScale": "linear",
-        "type": "line",
+        "type": "line-dotted",
         "main": [
             {"data": data}
         ],
@@ -82,7 +82,7 @@ def get_week_history_for_all_types(db_query, num_weeks):
 
     query = "SELECT SUM(amount) as y, type FROM transactions WHERE time BETWEEN ? AND ? GROUP BY type;"
 
-    td = [[] for _ in range(1,8)]
+    td = [[] for _ in range(10)]
     retval = []
 
     for i in range(num_weeks): 
@@ -139,3 +139,23 @@ def get_weekly(query, num_weeks, db_query, params, yTrans = None, xTrans = None)
     week = 3600l * 24 * 7
 
     return get_recurring(query, week, num_weeks, db_query, params, yTrans, xTrans)
+
+
+
+def some_cool_stats(db_query):
+    now = long(time())
+    breaking_point = now - 3600*24*31
+
+    return {
+        "total_takeout": db_query(
+            "SELECT SUM(amount) as amt FROM transactions WHERE time > ? AND type = 1", [breaking_point], True)['amt'],
+        "total_coffee": db_query(
+            "SELECT SUM(amount) as amt FROM transactions WHERE time > ? AND type = 3", [breaking_point], True)['amt'],
+        "total_income": db_query(
+            "SELECT SUM(amount) as amt FROM transactions WHERE time > ? AND amount > 0", [breaking_point], True)['amt'],
+        "total_expenses": db_query(
+            "SELECT SUM(amount) as amt FROM transactions WHERE time > ? AND amount < 0", [breaking_point], True)['amt'],
+        "avg_spending": db_query(
+            "SELECT AVG(amount) as amt FROM transactions WHERE time > ? AND amount < 0", [breaking_point], True)['amt'],
+    }
+
