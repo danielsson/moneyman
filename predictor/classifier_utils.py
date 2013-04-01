@@ -62,5 +62,9 @@ transactionTypes = {
     7: "Other"
 }
 
+
+def get_month_id(d):
+    return d.year * 12 + d.month
+
 if __name__ == '__main__':
     train_classifier_with_csv('export.csv')

@@ -23,6 +23,10 @@
 
   .span6 figure, .span4 figure {height: 150px;}
 
+  .large_chart {
+    height: 400px;
+  }
+
 </style>
 </head>
 <body>
@@ -33,6 +37,7 @@
       <ul class="nav nav-pills pull-right">
     <li class="active"><a href="/">Home</a></li>
     <li><a href="{{ url_for('list') }}">Transactions</a></li>
+    <li><a href="{{ url_for('details') }}">Detailed data</a></li>
     <li><a href="{{ url_for('upload') }}">Upload CSV</a></li>
       </ul>
        <div class=metanav>

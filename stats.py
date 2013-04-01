@@ -1,6 +1,6 @@
-from predictor.classifier_utils import transactionTypes
+from predictor.classifier_utils import transactionTypes, get_month_id
 from time import time
-from datetime import datetime
+from datetime import datetime, date
 
 def get_type_total(db_query):
     """Return chart data for spenditure per spending type"""
@@ -18,24 +18,51 @@ def get_type_total(db_query):
 
     return retval
 
+def get_monthly_spending(db_query, num_months):
+
+    """Return chart data for spenditure per spending type"""
+    current_month_id = get_month_id(date.today())
+
+    query = "SELECT SUM(amount) as y, type, monthid FROM transactions WHERE monthid BETWEEN ? AND ? GROUP BY type, monthid;"
+
+    datasets = [{"data": []} for _ in range(num_months+1)]
+
+    for row in db_query(query, [current_month_id - num_months, current_month_id]):
+        datasets[current_month_id - int(row['monthid'])]['data'].append(
+            {"x": transactionTypes[int(row['type'])], "y": row['y']})
+
+
+    retval = {
+        "xScale": "ordinal",
+        "yScale": "linear",
+        "type": "bar",
+        "main": datasets,
+    }
+
+    return retval
+
 def get_history_for_type(db_query, type, num_time, time_len):
     now = long(time())
-    breaking_point = time_len * num_time
+    breaking_point = now - time_len * num_time
 
-    query = "SELECT SUM(amount) as y FROM transactions WHERE time > ? GROUP BY time;"
+    query = "SELECT SUM(amount) as y, AVG(time) as atime FROM transactions WHERE time > ? AND type = ? GROUP BY time;"
     data = []
 
-    for i, point in enumerate(db_query(query, [breaking_point])):
-        data.append({"x": -i, "y":point['y']})
+    for i, point in enumerate(db_query(query, [breaking_point, type])):
 
-        retval = {
-            "xScale": "ordinal",
-            "yScale": "linear",
-            "type": "line",
-            "main": [
-                {"data": data}
-            ],
-        }
+        x = datetime.fromtimestamp(point['atime']).strftime("%Y-%m-%d");
+
+        data.append({"x": x, "y":point['y']})
+
+    retval = {
+        "xScale": "time",
+        "yScale": "linear",
+        "type": "line",
+        "main": [
+            {"data": data}
+        ],
+    }
+
     return retval
 
 
@@ -63,14 +90,17 @@ def get_week_history_for_all_types(db_query, num_weeks):
         for tpair in res:
             td[int(tpair['type'])].insert(i, tpair['y'])
 
-
-    for typ in td:
+    
+    for i, typ in enumerate(td):
         retval.append({
             "xScale": "ordinal",
             "yScale": "linear",
             "type": "line",
             "main": [
-                {"data": [{'x':str(todayWeekNumber - x + num_weeks), 'y':y} for x, y in enumerate(typ)]}
+                {
+                    "data": [{'x':str(todayWeekNumber - x + num_weeks), 'y':y} for x, y in enumerate(typ)],
+                    "className": "type" + str(i)
+                }
             ],
         })
 

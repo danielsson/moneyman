@@ -40,3 +40,4 @@ nosetests.xml
 
 predictor/*.pkl*
 predictor/export.csv
+moneyman.db

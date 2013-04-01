@@ -1,11 +1,12 @@
 import csv, time, datetime
 from predictor.predictor import TransactionClassifier
 
-from predictor.classifier_utils import row_parser
+from predictor.classifier_utils import row_parser, get_month_id
 
 
 def import_csv(path, db):
-    """Import a csv file into the database"""
+    """Import a csv file into the database, using the predictor
+        to select type."""
 
     clf = TransactionClassifier()
 
@@ -25,12 +26,18 @@ def import_csv(path, db):
 
             timestamp = time.mktime(
                 datetime.datetime.strptime(row[0], '%Y-%m-%d').timetuple())
-            print [timestamp, trans['note'], trans['amount'], prediction[0]]
+
+            the_date = datetime.date.fromtimestamp(timestamp)
+
+            monthid = get_month_id(the_date)
+
             db.execute(
-                'INSERT INTO transactions (time, message, amount, type) ' +
-                'VALUES (?,?,?,?);',
-                [timestamp, unicode(trans['note'], "ISO-8859-1"), int(trans['amount']), int(prediction[0])])
+                'INSERT INTO transactions (time, message, amount, type, monthid) ' +
+                'VALUES (?,?,?,?,?);',
+                [timestamp, unicode(row[1], "ISO-8859-1"), int(trans['amount']), int(prediction[0]), monthid])
 
             db.commit()
 
     print "Imported %s to the db" % path
+
+

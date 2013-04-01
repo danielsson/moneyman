@@ -5,5 +5,6 @@ CREATE TABLE transactions (
 	time integer not null,
 	message string,
 	amount integer not null,
-	type integer not null
+	type integer not null,
+	monthid integer not null
 );

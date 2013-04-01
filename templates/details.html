@@ -1,0 +1,31 @@
+{% extends "layout.html" %}
+{% block head %}
+<script src="{{ url_for('static', filename='js/detail.js') }}" > </script>
+{% endblock %}
+
+{% block body %}
+<div class="row">
+    <div class="span8">
+        <ul class="nav nav-tabs" id="navTypes">
+            {% for t in types %}
+                <li><a href="#" data-typeid="{{ t }}">{{ types[t] }}</a></li>
+            {% endfor %}
+        </ul>
+    </div>
+    <div class="offset2 span2">
+        <select name="selectPeriod" id="selectPeriod" class="span2">
+            <option value="7,86400">Last week</option>
+            <option value="31,86400">Last month</option>
+            <option value="31,172800">Last 2 months</option>
+            <option value="31,345600">Last 6 months</option>
+            <option value="24,1296000">Last year</option>
+        </select>
+    </div>
+</div>
+<div class="row">
+    <div class="span12">
+        <figure class="large_chart" id="detailChart"></figure>
+    </div>
+
+</div>
+{% endblock %}
