@@ -43,7 +43,7 @@ def index():
 
     type_histograms = stats.get_week_history_for_all_types(query_db, 10)
 
-    cool_stats = stats.some_cool_stats(query_db)
+    cool_stats = stats.some_cool_stats(query_db, time.time() - 3600*24*31, time.time())
 
     return render_template("index.html", type_spending=type_spending, type_histograms=type_histograms, cool_stats=cool_stats)
 
@@ -131,6 +131,10 @@ def adjust_type():
 @app.route("/api/stats/history/<int:etype>/<int:duration>/<int:length>")
 def api_stats(etype, duration, length):
     return jsonify(stats.get_history_for_type(query_db, etype, length, duration))
+
+@app.route("/api/stats/cool/<int:begin>/<int:end>")
+def api_cool(begin, end):
+    return jsonify(stats.some_cool_stats(query_db, begin, end))
 
 
 if __name__ == '__main__':

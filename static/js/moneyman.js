@@ -45,9 +45,17 @@ var MoneyMan = (function() {
 		};
 
 		this.ChartState = function(t,l,d) {
-			this.type = t || 0;
-			this.len = l || 7;
-			this.duration = d || 86400;
+
+			this.set = function(t,l,d) {
+				//Since t may be 0 special care must be taken
+				if(t !== false && t !== undefined)
+					this.type = t;
+
+				this.len = l || this.len;
+				this.duration = d || this.duration;
+			}
+
+			this.set(t || 0, l || 7, d || 86400);
 		};
 
 		this.HistoryChartApi = new function() {

@@ -3,9 +3,7 @@
 $(document).ready(function() {
 
 	function setState(t,l,d) {
-		state.type = t || state.type;
-		state.len = l || state.len;
-		state.duration = d || state.duration;
+		state.set(t,l,d);
 
 		detailChart.load();
 	}
@@ -40,11 +38,9 @@ $(document).ready(function() {
 	if(window.location.hash.length) {
 		parts = window.location.hash.substr(1).split(",");
 		try {
-			state.type = parts[0] || state.type;
-			state.len = parts[1] || state.len;
-			state.duration = parts[2] || state.duration;
+			state.set(parts[0] || state.type, parts[1] || state.len, parts[2] || state.duration)
 
-			$btnTypes.eq(state.type - 1).parent().addClass('active').siblings().removeClass('active');
+			$btnTypes.eq(state.type).parent().addClass('active').siblings().removeClass('active');
 		} catch (e) {
 			state = new ChartState();
 			detailChart.state = state;

@@ -98,56 +98,23 @@ def get_week_history_for_all_types(db_query, num_weeks):
 
     return retval
 
-def get_recurring(
-    query, time_len, num_time, db_query, params, yTrans = None, xTrans = None):
-    now = long(time())
 
-    if yTrans == None:
-        def yTrans(e,i):
-            return e['y']
-    if xTrans == None:
-        xTrans = lambda e,i: transactionTypes[int(e['x'])]
-
-    datasets = []
-
-    for i in range(num_time):
-        datasets.append(
-        {
-            "data": [{"x": xTrans(e, i), "y": yTrans(e, i)}
-                for e in db_query(query, params + [now - time_len * (i+1), now - time_len * i])
-                if e['y'] != None]
-        })
-    if not len(datasets[-1]['data']):
-        datasets.pop()
-
-    return datasets
-
-def get_monthly(query, num_months, db_query, params, yTrans = None, xTrans = None):
-    month = 3600l * 24 * 10 #Lies!! TODO
-
-    return get_recurring(query, month, num_months, db_query, params, yTrans, xTrans)
-
-def get_weekly(query, num_weeks, db_query, params, yTrans = None, xTrans = None):
-    week = 3600l * 24 * 7
-
-    return get_recurring(query, week, num_weeks, db_query, params, yTrans, xTrans)
-
-
-
-def some_cool_stats(db_query):
-    now = long(time())
-    breaking_point = now - 3600*24*31
+def some_cool_stats(db_query, begin, to):
+    """Return some cool stats from the period between begin and to.
+    begin and to are unix timestamps in seconds"""
+    
+    bindings = [begin, to]
 
     return {
         "total_takeout": db_query(
-            "SELECT SUM(amount) as amt FROM transactions WHERE time > ? AND type = 1", [breaking_point], True)['amt'],
+            "SELECT SUM(amount) as amt FROM transactions WHERE time BETWEEN ? AND ? AND type = 1", bindings, True)['amt'],
         "total_coffee": db_query(
-            "SELECT SUM(amount) as amt FROM transactions WHERE time > ? AND type = 3", [breaking_point], True)['amt'],
+            "SELECT SUM(amount) as amt FROM transactions WHERE time BETWEEN ? AND ? AND type = 3", bindings, True)['amt'],
         "total_income": db_query(
-            "SELECT SUM(amount) as amt FROM transactions WHERE time > ? AND amount > 0", [breaking_point], True)['amt'],
+            "SELECT SUM(amount) as amt FROM transactions WHERE time BETWEEN ? AND ? AND amount > 0", bindings, True)['amt'],
         "total_expenses": db_query(
-            "SELECT SUM(amount) as amt FROM transactions WHERE time > ? AND amount < 0", [breaking_point], True)['amt'],
+            "SELECT SUM(amount) as amt FROM transactions WHERE time BETWEEN ? AND ? AND amount < 0", bindings, True)['amt'],
         "avg_spending": db_query(
-            "SELECT AVG(amount) as amt FROM transactions WHERE time > ? AND amount < 0", [breaking_point], True)['amt'],
+            "SELECT AVG(amount) as amt FROM transactions WHERE time BETWEEN ? AND ? AND amount < 0", bindings, True)['amt'],
     }
 

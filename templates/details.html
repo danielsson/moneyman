@@ -5,14 +5,14 @@
 
 {% block body %}
 <div class="row">
-    <div class="span8">
+    <div class="span9">
         <ul class="nav nav-tabs" id="navTypes">
             {% for t in types %}
                 <li><a href="#" data-typeid="{{ t }}">{{ types[t] }}</a></li>
             {% endfor %}
         </ul>
     </div>
-    <div class="offset2 span2">
+    <div class="offset1 span2">
         <select name="selectPeriod" id="selectPeriod" class="span2">
             <option value="7,86400">Last week</option>
             <option value="31,86400">Last month</option>
