@@ -1,77 +1,17 @@
-var DetailChart = function(s) {
-	this.chart = null;
-	this.state = s;
-	
-	var defaultElement = "#detailChart";
-	var element = null;
 
-	this.setElement = function(elem) {element = elem;};
-
-	this.init = function(data, elem) {
-		elem = elem || defaultElement;
-
-		var opts = {
-  			"dataFormatX": function (x) { return d3.time.format('%Y-%m-%d').parse(x); },
-  			"tickFormatX": function (x) { return d3.time.format('%a %d %b')(x); }
-		};
-
-		this.chart = new xChart('line', data, elem, opts);
-		element = elem;
-
-		var r = this;
-		this.chart.click = function() {r.onClick(this)};
-	};
-
-	this.setData = function(data) {
-
-		if (this.chart === null) {
-			this.init(data, element);
-		} else {
-			this.chart.setData(data);
-		}
-	};
-
-	this.onClick = function() {};
-
-	this.load = function() {
-		var t = this;
-		HistoryChartApi.getDataForState(this.state, function(data) {
-			t.setData(data);
-		});
-	}
-
-};
-
-var ChartState = function(t,l,d) {
-	this.type = t || 1;
-	this.len = l || 7;
-	this.duration = d || 86400;
-}
-
-
-var HistoryChartApi = (function() {
-	var base = "/api/stats/history"
-
-	this.getDataForState = function(state, callback) {
-		var url = [base, state.type, state.len, state.duration].join('/');
-		$.getJSON(url, callback);
-	}
-	return this;
-
-})();
-
-function setState(t,l,d) {
-	state.type = t || state.type;
-	state.len = l || state.len;
-	state.duration = d || state.duration;
-
-	detailChart.load();
-}
 
 $(document).ready(function() {
 
-	window.state = new ChartState();
-	window.detailChart = new DetailChart(state);
+	function setState(t,l,d) {
+		state.type = t || state.type;
+		state.len = l || state.len;
+		state.duration = d || state.duration;
+
+		detailChart.load();
+	}
+
+	var state = new MoneyMan.ChartState();
+	var detailChart = new MoneyMan.DetailChart(state);
 
 	$btnTypes = $('#navTypes').find('a');
 

@@ -87,6 +87,7 @@ def upload():
 
     return render_template("upload.html")
 
+
 @app.route('/balance/adjust', methods=['POST'])
 def adjust_balance():
     message = request.form['message']
@@ -106,6 +107,7 @@ def adjust_balance():
     flash("Successfully adjusted balance")
 
     return redirect(url_for("list"))
+
 
 @app.route('/type/adjust', methods=['POST'])
 def adjust_type():
