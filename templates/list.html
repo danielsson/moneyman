@@ -5,12 +5,13 @@
 {% block body %} 
 
 <div class=row>
-    <div class="span8">
+    <div class="span10">
     {% if transactions %}
         <table class="table table-hover" id="transTable">
             <thead>
                 <tr>
                     <th><small>ID</small></th>
+                    <th><small>Date</small></th>
                     <th>Message</th>
                     <th>Amount</th>
                     <th>Type</th>
@@ -20,6 +21,7 @@
                 {% for trans in transactions %}
                 <tr class="type{{trans.type}} type" data-id="{{ trans.id }}">
                     <td><span class="badge">{{ trans.id }}<span></td>
+                    <td><small>{{ trans.time|to_str_date }}</small></td>
                     <td>{{ trans.message|title }}</td>
                     <td>
                         {{ trans.amount }}
@@ -38,7 +40,7 @@
         <p>You can <a href="{{ url_for('upload') }}">import transactions</a> to make them appear here.</p>
     {% endif %}
     </div>
-    <div class="span4">
+    <div class="span2">
 
         <h5>Total expenses</h5>
         <p class="lead">{{ stats.expenses }} kr</p>

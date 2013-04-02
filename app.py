@@ -59,6 +59,10 @@ def teardown(ex):
 def to_type_string(v):
     return transactionTypes[int(v)]
 
+@app.template_filter('to_str_date')
+def to_str_date(v):
+    return datetime.datetime.fromtimestamp(int(v)).strftime("%Y-%m-%d");
+
 
 @app.route('/')
 @login_required
