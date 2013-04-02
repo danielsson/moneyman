@@ -1,6 +1,10 @@
 import sqlite3
 from flask import Flask, request, session, g, redirect, url_for
 from flask import abort, render_template, flash, jsonify
+from flask.ext.login import (LoginManager, current_user, login_required,
+                            login_user, logout_user, UserMixin, AnonymousUser,
+                            confirm_login, fresh_login_required)
+
 import os, time, datetime, string
 
 
@@ -11,6 +15,26 @@ import config
 
 app = Flask(__name__)
 app.config.from_object(config.DevConfig)
+
+login_manager = LoginManager()
+login_manager.login_view = "login"
+
+class User(UserMixin):
+    def __init__(self, name, id, active=True):
+        self.name = name
+        self.id = id
+        self.active = active
+
+    def is_active(self):
+        return self.active
+
+@login_manager.user_loader
+def load_user(i):
+    return User("mattias", 1)
+    
+login_manager.init_app(app)
+
+
 
 def connect_db():
     return sqlite3.connect(app.config['DATABASE'])
@@ -37,6 +61,7 @@ def to_type_string(v):
 
 
 @app.route('/')
+@login_required
 def index():
 
     type_spending = stats.get_monthly_spending(query_db, 3)
@@ -49,6 +74,7 @@ def index():
 
 
 @app.route("/list")
+@login_required
 def list():
 
     transactions = query_db('SELECT * FROM transactions ORDER BY time DESC;')
@@ -62,10 +88,12 @@ def list():
     return render_template("list.html", transactions=transactions, stats=stats, types=transactionTypes)
 
 @app.route("/details")
+@login_required
 def details():
     return render_template('details.html', types=transactionTypes)
 
 @app.route("/upload", methods=['GET', 'POST'])
+@login_required
 def upload():
 
 
@@ -88,7 +116,29 @@ def upload():
     return render_template("upload.html")
 
 
+@app.route('/login', methods=['POST', 'GET'])
+def login():
+    if request.method == 'POST':
+        if request.form['username'] == "mattias" and request.form['password'] == "mattias":
+            login_user(User('Mattias', 1))
+            flash('Login successful.')
+
+            return redirect(request.args.get("next") or url_for("index"))
+        else:
+            flash("Unknown credentials")
+
+    return render_template('login.html')
+
+@app.route('/logout')
+@login_required
+def logout():
+    logout_user()
+    return redirect(url_for('login'))
+
+
+
 @app.route('/balance/adjust', methods=['POST'])
+@login_required
 def adjust_balance():
     message = request.form['message']
     amount = int(request.form['amount'])
@@ -110,6 +160,7 @@ def adjust_balance():
 
 
 @app.route('/type/adjust', methods=['POST'])
+@login_required
 def adjust_type():
     tid = int(request.form['id'])
     t = int(request.form['type'])
@@ -129,10 +180,12 @@ def adjust_type():
     return redirect(url_for("list"))
 
 @app.route("/api/stats/history/<int:etype>/<int:duration>/<int:length>")
+@login_required
 def api_stats(etype, duration, length):
     return jsonify(stats.get_history_for_type(query_db, etype, length, duration))
 
 @app.route("/api/stats/cool/<int:begin>/<int:end>")
+@login_required
 def api_cool(begin, end):
     return jsonify(stats.some_cool_stats(query_db, begin, end))
 

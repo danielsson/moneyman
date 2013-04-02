@@ -1,0 +1,67 @@
+<!doctype html>
+<html>
+<head>
+    <title></title>
+    <link rel=stylesheet type=text/css href="{{ url_for('static', filename='css/bootstrap.min.css') }}">
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+    <script src="{{ url_for('static', filename='js/bootstrap.min.js') }}" ></script>
+    <style>
+        .row {margin-top: 100px;}
+        #signin {
+            background-color: black;
+            padding: 40px;
+            color: #FFF;
+        }
+
+        input[type] {
+            border: none;
+            box-shadow: none;
+            border-radius: 0;
+        }
+        form {margin: 0;}
+    </style>
+</head>
+<body>
+    <div class=page>
+
+        <div class="container">
+
+            {% for message in get_flashed_messages() %}
+                <div class="alert alert-info">{{ message }}</div>
+            {% endfor %}
+
+            <div class="row">
+                <div class="offset3 span6">
+                    <div id="signin">
+                        <form action="{{ url_for('login') }}" method="POST" class="form-horizontal">
+                            <fieldset>
+                                <h3>Sign in</h3>
+
+                                <div class="control-group">
+                                    <label for="" class="control-label">Username</label>
+                                    <div class="controls">
+                                        <input type="text" name="username">
+                                    </div>
+                                </div>
+                                <div class="control-group">
+                                    <label for="" class="control-label">Password</label>
+                                    <div class="controls">
+                                        <input type="password" name="password">
+                                    </div>
+                                </div>
+                                <div class="control-group" style="margin-bottom:0">
+                                    <label for="" class="control-label"></label>
+                                    <div class="controls">
+                                        <input type="submit" class="btn btn-primary pull-right">
+                                    </div>
+                                </div>
+                            </fieldset>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</body>
+</html>

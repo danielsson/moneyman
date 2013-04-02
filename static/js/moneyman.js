@@ -55,7 +55,7 @@ var MoneyMan = (function() {
 				this.duration = d || this.duration;
 			}
 
-			this.set(t || 0, l || 7, d || 86400);
+			this.set(t || 0, l || 31, d || 86400);
 		};
 
 		this.HistoryChartApi = new function() {
