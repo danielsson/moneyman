@@ -6,8 +6,12 @@ def train_classifier_with_csv(path):
     target = []
 
     with open(path, 'rb') as csvfile:
-        reader = csv.reader(csvfile)
-        reader.next() #Skip title
+        dialect = csv.Sniffer().sniff(csvfile.read(1024))
+        csvfile.seek(0)
+
+        reader = csv.reader(csvfile, dialect)
+        reader.next() #Skip header
+        
         for row in reader:
             try:
                 X.append(row_parser(row))

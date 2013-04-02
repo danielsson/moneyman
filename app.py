@@ -144,7 +144,7 @@ def adjust_balance():
     amount = int(request.form['amount'])
 
     if amount < 0:
-        t = 7
+        t = 7 
     else:
         t = 6
 

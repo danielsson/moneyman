@@ -11,7 +11,10 @@ def import_csv(path, db):
     clf = TransactionClassifier()
 
     with open(path, 'rb') as csvfile:
-        reader = csv.reader(csvfile, delimiter="\t")
+        dialect = csv.Sniffer().sniff(csvfile.read(1024))
+        csvfile.seek(0)
+
+        reader = csv.reader(csvfile, dialect)
         reader.next() #Skip header
 
         for row in reader:
