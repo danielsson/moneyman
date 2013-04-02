@@ -9,7 +9,7 @@ $(document).ready(function() {
 	}
 
 	var state = new MoneyMan.ChartState();
-	var detailChart = new MoneyMan.DetailChart(state);
+	var detailChart = new MoneyMan.DetailChart(state, MoneyMan.HistoryChartApi);
 
 	$btnTypes = $('#navTypes').find('a');
 

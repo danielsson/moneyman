@@ -1,9 +1,10 @@
 
 var MoneyMan = (function() {
 	return new function() {
-		this.DetailChart = function(s) {
+		this.DetailChart = function(s, a) {
 			this.chart = null;
 			this.state = s;
+			this.api = a;
 			
 			var defaultElement = "#detailChart";
 			var element = null;
@@ -14,8 +15,8 @@ var MoneyMan = (function() {
 				elem = elem || defaultElement;
 
 				var opts = {
-		  			"dataFormatX": function (x) { return d3.time.format('%Y-%m-%d').parse(x); },
-		  			"tickFormatX": function (x) { return d3.time.format('%a %d %b')(x); }
+					"dataFormatX": function (x) { return d3.time.format('%Y-%m-%d').parse(x); },
+					"tickFormatX": function (x) { return d3.time.format('%a %d %b')(x); }
 				};
 
 				this.chart = new xChart('line', data, elem, opts);
@@ -38,7 +39,7 @@ var MoneyMan = (function() {
 
 			this.load = function() {
 				var t = this;
-				MoneyMan.HistoryChartApi.dataFromState(this.state, function(data) {
+				this.api.dataFromState(this.state, function(data) {
 					t.setData(data);
 				});
 			}
@@ -63,6 +64,28 @@ var MoneyMan = (function() {
 
 			this.dataFromState = function(state, callback) {
 				var url = [base, state.type, state.len, state.duration].join('/');
+				$.getJSON(url, callback);
+			}
+			return this;
+
+		};
+
+		this.TypeChartApi = new function() {
+			var base = "/api/stats/spending_by_type"
+
+			this.dataFromState = function(state, callback) {
+				var url = [base, state.len, state.duration].join('/');
+				$.getJSON(url, callback);
+			}
+			return this;
+
+		};
+
+		this.HistogramApi = new function() {
+			var base = "/api/stats/histogram"
+
+			this.dataFromState = function(state, callback) {
+				var url = [base, state.len, state.duration].join('/');
 				$.getJSON(url, callback);
 			}
 			return this;

@@ -92,6 +92,16 @@ def list():
 def details():
     return render_template('details.html', types=transactionTypes)
 
+@app.route("/histogram")
+@login_required
+def view_histogram():
+    return render_template('histogram.html')
+
+@app.route("/pies")
+@login_required
+def pies():
+    return render_template('pies.html', types=transactionTypes)
+
 @app.route("/upload", methods=['GET', 'POST'])
 @login_required
 def upload():
@@ -188,6 +198,16 @@ def api_stats(etype, duration, length):
 @login_required
 def api_cool(begin, end):
     return jsonify(stats.some_cool_stats(query_db, begin, end))
+
+@app.route("/api/stats/spending_by_type/<int:duration>/<int:length>")
+@login_required
+def spending_by_type(duration, length):
+    return jsonify(results = stats.get_sum_by_type(query_db, length, duration))
+
+@app.route("/api/stats/histogram/<int:duration>/<int:length>")
+@login_required
+def histogram(duration, length):
+    return jsonify(stats.get_histogram(query_db, length, duration))
 
 
 if __name__ == '__main__':

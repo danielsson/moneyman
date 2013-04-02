@@ -47,9 +47,9 @@ def get_history_for_type(db_query, type, num_time, time_len):
         data.append({"x": x, "y":point['y']})
 
     retval = {
-        "xScale": "time",
+        "xScale": "ordinal",
         "yScale": "linear",
-        "type": "line-dotted",
+        "type": "bar",
         "main": [
             {"data": data}
         ],
@@ -118,3 +118,60 @@ def some_cool_stats(db_query, begin, to):
             "SELECT AVG(amount) as amt FROM transactions WHERE time BETWEEN ? AND ? AND amount < 0", bindings, True)['amt'],
     }
 
+
+def get_sum_by_type(db_query, num_time, time_len):
+    """Return the sum under the specified timeframe for each spending type. This method
+    formats for the nvd3 lib"""
+    bindings = [time() - num_time * time_len, time()]
+
+    res = db_query("SELECT SUM(amount) as sum_, type FROM transactions WHERE time BETWEEN ? AND ? GROUP BY type;", bindings)
+
+    values = []
+    for row in res:
+        values.append(
+                {
+                    "label": transactionTypes[int(row['type'])],
+                    "value": abs(int(row['sum_']))
+                })
+
+    retval = [
+        {
+            "key": "Spending by type",
+            "values": values
+        },
+    ]
+    print retval
+    return retval
+
+def get_histogram(db_query, num_time, time_len):
+    bindings = [time() - num_time * time_len, time()]
+
+    #This ensures that we begin at the correct number
+    initial_value = db_query("SELECT SUM(amount) as S FROM transactions WHERE time < ?;", [bindings[0]], True)['S']
+
+    if initial_value == None:
+        initial_value = 0
+
+    res = db_query("SELECT SUM(amount) as amount, time FROM transactions WHERE time BETWEEN ? AND ? GROUP BY time ORDER BY time ASC;", bindings)
+
+    data = [{"x": datetime.fromtimestamp(bindings[0]).strftime("%Y-%m-%d"), "y": initial_value}]
+
+    for i, row in enumerate(res):
+        x = datetime.fromtimestamp(row['time']).strftime("%Y-%m-%d");
+        y = int(row['amount'] + data[i]['y'])
+
+        data.append({
+            "x": x,
+            "y": y
+        })
+
+    retval = {
+        "xScale": "time",
+        "yScale": "linear",
+        "type": "line",
+        "main": [
+            {"data": data}
+        ],
+    }
+
+    return retval
