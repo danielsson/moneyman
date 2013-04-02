@@ -2,21 +2,6 @@ from predictor.classifier_utils import transactionTypes, get_month_id
 from time import time
 from datetime import datetime, date
 
-def get_type_total(db_query):
-    """Return chart data for spenditure per spending type"""
-
-    query = "SELECT SUM(amount) as y, type as x FROM transactions WHERE time BETWEEN ? AND ? GROUP BY type;"
-
-    datasets = get_monthly(query, 4, db_query, [])
-
-    retval = {
-        "xScale": "ordinal",
-        "yScale": "linear",
-        "type": "bar",
-        "main": datasets,
-    }
-
-    return retval
 
 def get_monthly_spending(db_query, num_months):
 
@@ -45,10 +30,17 @@ def get_history_for_type(db_query, type, num_time, time_len):
     now = long(time())
     breaking_point = now - time_len * num_time
 
-    query = "SELECT SUM(amount) as y, AVG(time) as atime FROM transactions WHERE time > ? AND type = ? GROUP BY time;"
+    #Special case: 0 = all types
+    if type == 0:
+        query = "SELECT SUM(amount) as y, AVG(time) as atime FROM transactions WHERE time > ? GROUP BY time;"
+        bindings = [breaking_point]
+    else:
+        query = "SELECT SUM(amount) as y, AVG(time) as atime FROM transactions WHERE time > ? AND type = ? GROUP BY time;"
+        bindings = [breaking_point, type]
+    
     data = []
 
-    for i, point in enumerate(db_query(query, [breaking_point, type])):
+    for i, point in enumerate(db_query(query, bindings)):
 
         x = datetime.fromtimestamp(point['atime']).strftime("%Y-%m-%d");
 
