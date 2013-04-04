@@ -28,6 +28,16 @@
     height: 400px;
   }
 
+  h1 {
+    font-weight: normal;
+    font-family: Verdana, sans-serif;
+    font-size: 28px;
+  }
+
+  .masthead > ul {
+    margin-top: 6px;
+  }
+
 </style>
 </head>
 <body>
@@ -36,17 +46,15 @@
   <div class="container">
     <div class="masthead">
       <ul class="nav nav-pills pull-right">
-    <li><a href="/">Home</a></li>
-    <li><a href="{{ url_for('list') }}">Transactions</a></li>
-    <li><a href="{{ url_for('details') }}">Detailed data</a></li>
-    <li><a href="{{ url_for('view_histogram') }}">Histogram</a></li>
-    <li><a href="{{ url_for('pies') }}">PIE</a></li>
-    <li><a href="{{ url_for('upload') }}">Upload CSV</a></li>
+        <li><a href="/">Home</a></li>
+        <li><a href="{{ url_for('list') }}">Transactions</a></li>
+        <li><a href="{{ url_for('details') }}">Detailed data</a></li>
+        <li><a href="{{ url_for('view_histogram') }}">Histogram</a></li>
+        <li><a href="{{ url_for('pies') }}">PIE</a></li>
+        <li><a href="{{ url_for('upload') }}">Upload CSV</a></li>
+        <li><a href="{{ url_for('logout') }}">Log out</a></li>
       </ul>
-       <div class=metanav>
-      <a href="/logout">log out</a>
-      </div>
-      <h3 class="muted">Moneyman</h3>
+      <h1>Moneyman</h1>
     </div>
 
     <hr>
