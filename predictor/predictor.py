@@ -7,7 +7,7 @@ from os.path import isfile
 
 class TransactionClassifier :
     
-    PERSISTED_FILENAME = "/home/mattias/projects/moneyman/predictor/classifier.pkl"
+    persisted_filename = "classifier.pkl"
 
     X = [ #Some test data
         {'tag': "BULLENS", 'amount': 40},
@@ -16,9 +16,11 @@ class TransactionClassifier :
     ]
 
     
-    def __init__(self):
-        if isfile(self.PERSISTED_FILENAME):
-            self.classifier = joblib.load(self.PERSISTED_FILENAME)
+    def __init__(self, persist_file):
+        self.persisted_filename = persist_file
+
+        if isfile(self.persisted_filename):
+            self.classifier = joblib.load(self.persisted_filename)
         
         else:
             self._init_clf()
@@ -46,4 +48,4 @@ class TransactionClassifier :
 
 
     def persist(self):
-        joblib.dump(self.classifier, self.PERSISTED_FILENAME)
+        joblib.dump(self.classifier, self.persisted_filename)
