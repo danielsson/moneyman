@@ -1,11 +1,11 @@
 import csv, datetime
 from predictor import TransactionClassifier
 
-def train_classifier_with_csv(path):
+def train_classifier_with_csv(csv_path, classifier_path):
     X = []
     target = []
 
-    with open(path, 'rb') as csvfile:
+    with open(csv_path, 'rb') as csvfile:
         dialect = csv.Sniffer().sniff(csvfile.read(1024))
         csvfile.seek(0)
 
@@ -27,7 +27,7 @@ def train_classifier_with_csv(path):
             if len(X) != len(target):
                 X.pop()
 
-        clf = TransactionClassifier()
+        clf = TransactionClassifier(classifier_path)
 
         clf.fit(X, target)
         clf.persist()
@@ -71,4 +71,5 @@ def get_month_id(d):
     return d.year * 12 + d.month
 
 if __name__ == '__main__':
-    train_classifier_with_csv('export.csv')
+    """Perform a training session using the export.csv file"""
+    train_classifier_with_csv('export.csv', 'classifier.pkl')
