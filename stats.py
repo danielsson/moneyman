@@ -32,11 +32,17 @@ def get_history_for_type(db_query, type, num_time, time_len):
 
     #Special case: 0 = all types
     if type == 0:
-        query = "SELECT SUM(amount) as y, AVG(time) as atime FROM transactions WHERE time > ? GROUP BY time ORDER BY atime ASC;"
+        query = "SELECT SUM(amount) as y, AVG(time) as atime FROM transactions WHERE time > ? GROUP BY %s ORDER BY atime ASC;"
         bindings = [breaking_point]
     else:
-        query = "SELECT SUM(amount) as y, AVG(time) as atime FROM transactions WHERE time > ? AND type = ? GROUP BY time ORDER BY atime ASC;"
+        query = "SELECT SUM(amount) as y, AVG(time) as atime FROM transactions WHERE time > ? AND type = ? GROUP BY %s ORDER BY atime ASC;"
         bindings = [breaking_point, type]
+
+    if time_len * num_time < 3600*24*32:
+        #If the period is less than two months, display daily
+        query = query % "time"
+    else:
+        query = query % "strftime('%W', time, 'unixepoch')"
     
     data = []
     lastdate = 0
@@ -50,7 +56,11 @@ def get_history_for_type(db_query, type, num_time, time_len):
         else:
             while lastdate < point['atime']:
                 data.append({"x": lastdate, "y": 0})
-                lastdate = lastdate + 3600 * 24
+
+                if time_len * num_time < 3600*24*32:
+                    lastdate = lastdate + 3600 * 24
+                else:
+                    lastdate = lastdate + 3600 * 24 * 32
 
             if lastdate > point['atime']:
                 lastdate = point['atime'] - 1
@@ -61,7 +71,7 @@ def get_history_for_type(db_query, type, num_time, time_len):
     retval = {
         "xScale": "ordinal",
         "yScale": "linear",
-        "type": "bar",
+
         "main": [
             {"data": data}
         ],
@@ -166,10 +176,10 @@ def get_histogram(db_query, num_time, time_len):
 
     res = db_query("SELECT SUM(amount) as amount, time FROM transactions WHERE time BETWEEN ? AND ? GROUP BY time ORDER BY time ASC;", bindings)
 
-    data = [{"x": datetime.fromtimestamp(bindings[0]).strftime("%Y-%m-%d"), "y": initial_value}]
+    data = [{"x": bindings[0], "y": initial_value}]
 
     for i, row in enumerate(res):
-        x = datetime.fromtimestamp(row['time']).strftime("%Y-%m-%d");
+        x = row['time'];
         y = int(row['amount'] + data[i]['y'])
 
         data.append({
