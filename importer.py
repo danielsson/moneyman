@@ -4,13 +4,13 @@ from predictor.predictor import TransactionClassifier
 from predictor.classifier_utils import row_parser, get_month_id
 
 
-def import_csv(path, db):
+def import_csv(csv_path, classifier_path, user_id, db):
     """Import a csv file into the database, using the predictor
         to select type."""
 
-    clf = TransactionClassifier()
+    clf = TransactionClassifier(classifier_path)
 
-    with open(path, 'rb') as csvfile:
+    with open(csv_path, 'rb') as csvfile:
         dialect = csv.Sniffer().sniff(csvfile.read(1024))
         csvfile.seek(0)
 
@@ -35,12 +35,12 @@ def import_csv(path, db):
             monthid = get_month_id(the_date)
 
             db.execute(
-                'INSERT INTO transactions (time, message, amount, type, monthid) ' +
-                'VALUES (?,?,?,?,?);',
-                [timestamp, unicode(row[1], "ISO-8859-1"), int(trans['amount']), int(prediction[0]), monthid])
+                'INSERT INTO transactions (time, message, amount, type, monthid, uid) ' +
+                'VALUES (?,?,?,?,?,?);',
+                [timestamp, unicode(row[1], "UTF-8"), int(trans['amount']), int(prediction[0]), monthid, user_id])
 
             db.commit()
 
-    print "Imported %s to the db" % path
+    print "Imported %s to the db" % csv_path
 
 

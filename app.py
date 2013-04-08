@@ -22,15 +22,38 @@ login_manager.login_view = "login"
 class User(UserMixin):
     def __init__(self, name, id, active=True):
         self.name = name
-        self.id = id
+        self.id = unicode(id)
         self.active = active
 
     def is_active(self):
         return self.active
 
+    @staticmethod
+    def byId(id):
+        res = query_db("SELECT * FROM users WHERE id=? LIMIT 1;", [id], True)
+
+        if res == None:
+            return None
+
+        return User(res['username'], res['id'])
+
+    @staticmethod
+    def byLogin(username, password):
+        res = query_db("SELECT * FROM users WHERE username=? AND password=? LIMIT 1;", [username, password], True)
+
+        if res == None:
+            return None
+
+        return User(res['username'], res['id'])
+
+
+
+    def get_id(self):
+        return self.id;
+
 @login_manager.user_loader
 def load_user(i):
-    return User("mattias", 1)
+    return User.byId(i)
     
 login_manager.init_app(app)
 
@@ -40,6 +63,9 @@ def connect_db():
     return sqlite3.connect(app.config['DATABASE'])
 
 def query_db(query, args=(), one=False):
+    if not hasattr(g, "db"):
+        g.db = connect_db()
+
     cur = g.db.execute(query, args)
     rv = [dict((cur.description[idx][0], value)
            for idx, value in enumerate(row)) for row in cur.fetchall()]
@@ -47,7 +73,8 @@ def query_db(query, args=(), one=False):
 
 @app.before_request
 def before_request():
-    g.db = connect_db()
+    if not hasattr(g, "db"):
+        g.db = connect_db()
 
 
 @app.teardown_request
@@ -84,9 +111,9 @@ def list():
     transactions = query_db('SELECT * FROM transactions ORDER BY time DESC;')
 
     stats = {
-        "expenses": query_db('SELECT SUM(amount) as e FROM transactions WHERE amount < 0;')[0]['e'],
-        "income": query_db('SELECT SUM(amount) as i FROM transactions WHERE amount > 0;')[0]['i'],
-        "balance": query_db('SELECT SUM(amount) as i FROM transactions;')[0]['i']
+        "expenses": query_db('SELECT SUM(amount) as e FROM transactions WHERE amount < 0 AND uid = ?;',[current_user.id],True)['e'],
+        "income": query_db('SELECT SUM(amount) as i FROM transactions WHERE amount > 0 AND uid = ?;',[current_user.id],True)['i'],
+        "balance": query_db('SELECT SUM(amount) as i FROM transactions WHERE uid = ?;',[current_user.id],True)['i']
     }
 
     return render_template("list.html", transactions=transactions, stats=stats, types=transactionTypes)
@@ -110,7 +137,6 @@ def pies():
 @login_required
 def upload():
 
-
     if request.method == 'POST':
         file = request.files['file']
         if file:
@@ -118,12 +144,12 @@ def upload():
             file.save(path)
 
             try:
-                import_csv(path, g.db)
+                import_csv(path, "predictor/classifier.pkl", current_user.id, g.db)
                 flash("CSV import successful.")
 
                 return redirect(url_for("list"))
             except Exception as e:
-                flash("Error importing csv. %s" % e.strerror)
+                flash("Error importing csv. %s" % e)
         else:
             flash("Error: File not found.")
 
@@ -133,8 +159,9 @@ def upload():
 @app.route('/login', methods=['POST', 'GET'])
 def login():
     if request.method == 'POST':
-        if request.form['username'] == "mattias" and request.form['password'] == "mattias":
-            login_user(User('Mattias', 1))
+        user = User.byLogin(request.form['username'], request.form['password'])
+        if user != None:
+            login_user(user)
             flash('Login successful.')
 
             return redirect(request.args.get("next") or url_for("index"))
@@ -163,7 +190,7 @@ def adjust_balance():
         t = 6
 
 
-    g.db.execute("INSERT INTO transactions (time, message, amount, type, monthid) VALUES (?,?,?,?,?);",
+    g.db.execute("INSERT INTO transactions (time, message, amount, type, monthid, ) VALUES (?,?,?,?,?);",
         [time.time(), message, amount, t, get_month_id(datetime.date.today())])
 
     g.db.commit()
