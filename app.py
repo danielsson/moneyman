@@ -118,7 +118,7 @@ def upload():
             file.save(path)
 
             try:
-                import_csv(path, g.db)
+                import_csv(path, "predictor/classifier.pkl", current_user.id, g.db)
                 flash("CSV import successful.")
 
                 return redirect(url_for("list"))
