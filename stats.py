@@ -32,19 +32,31 @@ def get_history_for_type(db_query, type, num_time, time_len):
 
     #Special case: 0 = all types
     if type == 0:
-        query = "SELECT SUM(amount) as y, AVG(time) as atime FROM transactions WHERE time > ? GROUP BY time;"
+        query = "SELECT SUM(amount) as y, AVG(time) as atime FROM transactions WHERE time > ? GROUP BY time ORDER BY atime ASC;"
         bindings = [breaking_point]
     else:
-        query = "SELECT SUM(amount) as y, AVG(time) as atime FROM transactions WHERE time > ? AND type = ? GROUP BY time;"
+        query = "SELECT SUM(amount) as y, AVG(time) as atime FROM transactions WHERE time > ? AND type = ? GROUP BY time ORDER BY atime ASC;"
         bindings = [breaking_point, type]
     
     data = []
+    lastdate = 0
 
     for i, point in enumerate(db_query(query, bindings)):
 
-        x = datetime.fromtimestamp(point['atime']).strftime("%Y-%m-%d");
+        #Because the graphing lib cant handle linear bar graphs
+        #we have to insert zeros on days without transactions
+        if i == 0:
+            lastdate = point['atime']
+        else:
+            while lastdate < point['atime']:
+                data.append({"x": lastdate, "y": 0})
+                lastdate = lastdate + 3600 * 24
 
-        data.append({"x": x, "y":point['y']})
+            if lastdate > point['atime']:
+                lastdate = point['atime'] - 1
+
+
+        data.append({"x": point['atime'], "y":point['y']})
 
     retval = {
         "xScale": "ordinal",

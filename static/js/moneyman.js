@@ -15,11 +15,11 @@ var MoneyMan = (function() {
 				elem = elem || defaultElement;
 
 				var opts = {
-					"dataFormatX": function (x) { return d3.time.format('%Y-%m-%d').parse(x); },
-					"tickFormatX": function (x) { return d3.time.format('%a %d %b')(x); }
+					//"dataFormatX": function (x) { return d3.time.format('%Y-%m-%d').parse(new Date(x*1000)); },
+					"tickFormatX": function (x) { return d3.time.format('%a %d %b')(new Date(x*1000)); }
 				};
 
-				this.chart = new xChart('line', data, elem, opts);
+				this.chart = new xChart('bar', data, elem, opts);
 				element = elem;
 
 				var r = this;
