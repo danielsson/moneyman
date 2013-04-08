@@ -1,4 +1,5 @@
 DROP TABLE IF EXISTS transactions;
+DROP TABLE IF EXISTS users;
 
 CREATE TABLE transactions (
 	id integer primary key autoincrement,
@@ -8,3 +9,11 @@ CREATE TABLE transactions (
 	type integer not null,
 	monthid integer not null
 );
+
+CREATE TABLE users (
+	id integer primary key autoincrement,
+	active integer not null,
+	username text not null,
+	password text not null
+
+)
