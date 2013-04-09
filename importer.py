@@ -16,30 +16,33 @@ def import_csv(csv_path, classifier_path, user_id, db):
 
         reader = csv.reader(csvfile, dialect)
         reader.next() #Skip header
+        try:
+            for row in reader:
+                try:
+                    trans = row_parser(row)
 
-        for row in reader:
-            try:
-                trans = row_parser(row)
+                    prediction = clf.predict([trans])
+                except:
+                    print "Failed to predict:"
+                    print trans
+                    continue
 
-                prediction = clf.predict([trans])
-            except:
-                print "Failed to predict:"
-                print trans
-                continue
+                timestamp = time.mktime(
+                    datetime.datetime.strptime(row[0], '%Y-%m-%d').timetuple())
 
-            timestamp = time.mktime(
-                datetime.datetime.strptime(row[0], '%Y-%m-%d').timetuple())
+                the_date = datetime.date.fromtimestamp(timestamp)
 
-            the_date = datetime.date.fromtimestamp(timestamp)
+                monthid = get_month_id(the_date)
 
-            monthid = get_month_id(the_date)
-
-            db.execute(
-                'INSERT INTO transactions (time, message, amount, type, monthid, uid) ' +
-                'VALUES (?,?,?,?,?,?);',
-                [timestamp, unicode(row[1], "UTF-8"), int(trans['amount']), int(prediction[0]), monthid, user_id])
-
-            db.commit()
+                db.execute(
+                    'INSERT INTO transactions (time, message, amount, type, monthid, uid) ' +
+                    'VALUES (?,?,?,?,?,?);',
+                    [timestamp, unicode(row[1], "UTF-8"), int(trans['amount']), int(prediction[0]), monthid, user_id])
+        except:
+            #If there was an error, undo changes
+            db.rollback()
+            
+        db.commit()
 
     print "Imported %s to the db" % csv_path
 
