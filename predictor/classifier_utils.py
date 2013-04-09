@@ -57,13 +57,15 @@ def row_parser(row):
 
 transactionTypes = {
     0: "All",
-    1: "Takeout",
-    2: "Clothes etc.",
-    3: "Coffee",
-    4: "Apartment related",
-    5: "Beer",
-    6: "Deposit",
-    7: "Other"
+    1: "Income",
+    2: "Takeout",
+    3: "Groceries",
+    4: "Coffee",
+    5: "Housing",
+    6: "Apparel etc.",
+    7: "Transportation",
+    8: "Entertainment",
+    9: "Other"
 }
 
 
