@@ -101,7 +101,12 @@ def index():
 
     cool_stats = stats.some_cool_stats(query_db, time.time() - 3600*24*31, time.time())
 
-    return render_template("index.html", type_spending=type_spending, type_histograms=type_histograms, cool_stats=cool_stats)
+    return render_template(
+        "index.html",
+        type_spending=type_spending,
+        type_histograms=type_histograms,
+        cool_stats=cool_stats,
+        types=transactionTypes)
 
 
 @app.route("/list")
