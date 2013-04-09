@@ -15,7 +15,7 @@ def train_classifier_with_csv(csv_path, classifier_path):
         for row in reader:
             try:
                 X.append(row_parser(row))
-
+                
                 #We assume that row[3] is the target
                 target.append(int(row[3]))
             except:
@@ -40,7 +40,7 @@ def row_parser(row):
 
     #Determine which string to use from row
     n_split = row[1].split()
-    if n_split[0] == "Kortk\xf6p" and len(n_split) > 2:
+    if n_split[0] == "Kortk\xc3\xb6p" and len(n_split) > 2:
         note = n_split[2].lower()
     else:
         note = n_split[0].lower()
