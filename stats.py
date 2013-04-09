@@ -38,7 +38,7 @@ def get_history_for_type(db_query, type, num_time, time_len):
         query = "SELECT SUM(amount) as y, AVG(time) as atime FROM transactions WHERE time > ? AND type = ? GROUP BY %s ORDER BY atime ASC;"
         bindings = [breaking_point, type]
 
-    if time_len * num_time < 3600*24*32:
+    if time_len * num_time < 3600*24*70:
         #If the period is less than two months, display daily
         query = query % "time"
     else:
@@ -58,10 +58,10 @@ def get_history_for_type(db_query, type, num_time, time_len):
             while lastdate < point['atime']:
                 data.append({"x": lastdate, "y": 0})
 
-                if time_len * num_time < 3600*24*32:
+                if time_len * num_time < 3600*24*70:
                     lastdate = lastdate + 3600 * 24
                 else:
-                    lastdate = lastdate + 3600 * 24 * 32
+                    lastdate = lastdate + 3600*24*70
 
             if lastdate > point['atime']:
                 lastdate = point['atime'] - 1
