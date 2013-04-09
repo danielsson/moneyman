@@ -72,7 +72,7 @@ def get_history_for_type(db_query, type, num_time, time_len):
     retval = {
         "xScale": "ordinal",
         "yScale": "linear",
-
+        "type": "bar",
         "main": [
             {"data": data}
         ],
