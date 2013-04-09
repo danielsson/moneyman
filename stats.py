@@ -130,9 +130,9 @@ def some_cool_stats(db_query, begin, to):
 
     return {
         "total_takeout": db_query(
-            "SELECT SUM(amount) as amt FROM transactions WHERE time BETWEEN ? AND ? AND type = 1", bindings, True)['amt'],
+            "SELECT SUM(amount) as amt FROM transactions WHERE time BETWEEN ? AND ? AND type = 2", bindings, True)['amt'],
         "total_coffee": db_query(
-            "SELECT SUM(amount) as amt FROM transactions WHERE time BETWEEN ? AND ? AND type = 3", bindings, True)['amt'],
+            "SELECT SUM(amount) as amt FROM transactions WHERE time BETWEEN ? AND ? AND type = 4", bindings, True)['amt'],
         "total_income": db_query(
             "SELECT SUM(amount) as amt FROM transactions WHERE time BETWEEN ? AND ? AND amount > 0", bindings, True)['amt'],
         "total_expenses": db_query(
