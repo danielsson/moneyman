@@ -42,6 +42,7 @@ def get_history_for_type(db_query, type, num_time, time_len):
         #If the period is less than two months, display daily
         query = query % "time"
     else:
+        #else group by week
         query = query % "strftime('%W', time, 'unixepoch')"
     
     data = []
