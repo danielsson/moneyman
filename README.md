@@ -4,7 +4,7 @@ moneyman
 moneyman automatically categorizes and graphs your bank account transaction history, giving you a quick and cool
 overview of your spending habits. How much did you spend on coffee last month? Was it more than the month before?
 
-Quick set up guide
+Quick setup guide
 ------------------
 0. Clone this project to a destination of your choosing
 1. Install dependencies:(Sklearn wouldn't install to my virtualenv)
@@ -24,9 +24,10 @@ Where the 6 at the end is the category you want the row to be filed in. The numb
         python classifier_utils.py
 If you dont want to move the file, you can manually train the classifier using the function train_classifier_with_csv found in classifier_utils.py using the python shell.
 
-5. Now its time to start the app! Do so by running:
+5. Now its time to create the database and start the app! Do so by running:
 
         cd ../
+        sqlite3 moneyman.db < transactions.sql
         python app.py
         
 6. Go to the url displayed after running the previous command, and press Transactions in the main menu.
