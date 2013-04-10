@@ -37,7 +37,7 @@
         </table>
     {% else %}
         <h4>No transactions</h4>
-        <p>You can <a href="{{ url_for('upload') }}">import transactions</a> to make them appear here.</p>
+        <p>You can <a data-toggle="modal" data-target="#importModal">import transactions</a> to make them appear here.</p> 
     {% endif %}
     </div>
     <div class="span2">
@@ -54,7 +54,10 @@
         <p class="lead">{{ stats.balance }} kr</p>
         <hr>
 
-        <a href="#adjustBalanceModal" role="button" data-toggle="modal">Adjust Balance</a>   
+        <a data-toggle="modal" data-target="#importModal" class="btn btn-block btn-small btn-primary">Import csv</a>
+        <a data-toggle="modal" data-target="#adjustBalanceModal" class="btn btn-block btn-small"> 
+            Adjust balance
+        </a>
 </div>
 
 <div id="adjustBalanceModal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
@@ -73,6 +76,28 @@
     <div class="modal-footer">
         <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
         <input type="submit" class="btn btn-primary" value="Add"></input>
+    </div>
+    </form>
+</div>
+
+<div id="importModal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+        <h3 id="myModalLabel">Upload CSV</h3>
+    </div>
+    <div class="modal-body">
+        <p>Upload a CSV file of transactions to be classified and inserted into the ledger.</p>
+        <p>The csv must be of the format: <code>YYYY-MM-DD, message, amount</code></p>
+        <p>
+            The column order and the date format are important. Any kind of separator character can be used.
+        </p>
+        
+    </div>
+    <div class="modal-footer">
+        <form method="post" enctype="multipart/form-data" style="margin:0" action="{{ url_for('upload') }}" >
+            <input type="file" name=file class="pull-left">
+            <input type="submit" class="btn btn-primary">
+        </form>
     </div>
     </form>
 </div>

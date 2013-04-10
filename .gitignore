@@ -41,5 +41,5 @@ nosetests.xml
 *.pkl*
 predictor/export.csv
 moneyman.db
-
+uploaded_files/*
 *.csv

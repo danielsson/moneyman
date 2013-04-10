@@ -153,8 +153,13 @@ def upload():
                 flash("CSV import successful.")
 
                 return redirect(url_for("list"))
+                
             except Exception as e:
                 flash("Error importing csv. %s" % e)
+
+            finally:
+                os.remove(path)
+
         else:
             flash("Error: File not found.")
 
