@@ -153,7 +153,7 @@ def upload():
                 flash("CSV import successful.")
 
                 return redirect(url_for("list"))
-                
+
             except Exception as e:
                 flash("Error importing csv. %s" % e)
 
@@ -195,13 +195,12 @@ def adjust_balance():
     amount = int(request.form['amount'])
 
     if amount < 0:
-        t = 7 
+        t = 9
     else:
-        t = 6
+        t = 1
 
-
-    g.db.execute("INSERT INTO transactions (time, message, amount, type, monthid, ) VALUES (?,?,?,?,?);",
-        [time.time(), message, amount, t, get_month_id(datetime.date.today())])
+    g.db.execute("INSERT INTO transactions (time, message, amount, type, monthid, uid) VALUES (?,?,?,?,?,?);",
+        [0, message, amount, t, get_month_id(datetime.date.today()), current_user.id])
 
     g.db.commit()
 
