@@ -1,7 +1,32 @@
 import csv, datetime
 from predictor import TransactionClassifier
 
+
+#The supported transaction types. This is the canonical
+#specification used in the classifier.
+transactionTypes = {
+    0: "All",
+    1: "Income",
+    2: "Takeout",
+    3: "Groceries",
+    4: "Coffee",
+    5: "Housing",
+    6: "Apparel etc.",
+    7: "Transportation",
+    8: "Entertainment",
+    9: "Other"
+}
+
 def train_classifier_with_csv(csv_path, classifier_path):
+    """Trains a TransactionClassifier using the data in the
+    specified CSV file. The format of the file is: (below comma
+    separates rows)
+        YYYY-MM-DD, message, amount, type
+    The csv might use other separators than comma. The type must be 
+    one of the ones specified in transactionTypes. 
+    classifier_path spcifies which .pkl file to use to persist the
+    created classifier. Normally this is classifier.pkl in this dir."""
+
     X = []
     target = []
 
@@ -36,7 +61,8 @@ def train_classifier_with_csv(csv_path, classifier_path):
 
 
 def row_parser(row):
-    """Returns a dict of values from a csv row"""
+    """Returns a dict of values from a csv row. This dict must be used
+    to interact with the classifier in order to get accurate results."""
 
     #Determine which string to use from row
     n_split = row[1].split()
@@ -53,20 +79,6 @@ def row_parser(row):
 
 
     return {'note': note, 'weekday': weekday, 'amount': amount}
-
-
-transactionTypes = {
-    0: "All",
-    1: "Income",
-    2: "Takeout",
-    3: "Groceries",
-    4: "Coffee",
-    5: "Housing",
-    6: "Apparel etc.",
-    7: "Transportation",
-    8: "Entertainment",
-    9: "Other"
-}
 
 
 def get_month_id(d):

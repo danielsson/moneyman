@@ -2,6 +2,8 @@ from predictor.classifier_utils import transactionTypes, get_month_id
 from time import time
 from datetime import datetime, date
 
+#This file defines several stats-generating functions for the app
+#
 
 def get_monthly_spending(db_query, num_months):
 
@@ -27,6 +29,12 @@ def get_monthly_spending(db_query, num_months):
     return retval
 
 def get_history_for_type(db_query, type, num_time, time_len):
+    """Return the detailed transaction history for the specified
+    type under the specified time frame. The data will have internal
+    zero padding on non-activity dates due to limitations in the
+    front end of the application. If the time frame spans a period
+    longer than 70 days, data will be grouped by week."""
+
     now = long(time())
     breaking_point = now - time_len * num_time
 
@@ -163,10 +171,13 @@ def get_sum_by_type(db_query, num_time, time_len):
             "values": values
         },
     ]
-    print retval
     return retval
 
 def get_histogram(db_query, num_time, time_len):
+    """Return account balance history for the specified time frame.
+    The balance history will be adjusted for the opening balance
+    fot that timeframe"""
+
     bindings = [time() - num_time * time_len, time()]
 
     #This ensures that we begin at the correct number
