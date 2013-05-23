@@ -8,13 +8,6 @@ from os.path import isfile
 class TransactionClassifier :
     
     persisted_filename = "classifier.pkl"
-
-    X = [ #Some test data
-        {'tag': "BULLENS", 'amount': 40},
-        {'tag': "BULLENS", 'amount': 30},
-        {'tag': "IKEA", 'amount': 400}
-    ]
-
     
     def __init__(self, persist_file):
         self.persisted_filename = persist_file
