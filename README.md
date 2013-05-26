@@ -1,4 +1,4 @@
-moneyman
+Moneyman
 ========
 
 moneyman automatically categorizes and graphs your bank account transaction history, giving you a quick and cool
