@@ -43,3 +43,4 @@ predictor/export.csv
 moneyman.db
 uploaded_files/*
 *.csv
+venv/*
