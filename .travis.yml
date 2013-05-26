@@ -3,7 +3,7 @@ python:
   - "2.7"
 # command to install dependencies
 install:
-  - "pip install flask flask-login numpy scipy scikit-learn"
-  #- "sudo apt-get install python-sklearn -qq"
+  - "sudo apt-get install python-numpy python-scipy -qq"
+  - "pip install flask flask-login scikit-learn"
 # command to run tests
 script: python -m unittest discover
