@@ -35,6 +35,14 @@ var MoneyMan = (function() {
 				}
 			};
 
+			this.setState = function(state) {
+				this.state = state;
+				var me = this;
+				this.state.listen(function(s) {
+					me.load();
+				});
+			}
+
 			this.onClick = function() {};
 
 			this.load = function() {
@@ -59,8 +67,45 @@ var MoneyMan = (function() {
 			this.set(t || 0, l || 31, d || 86400);
 		};
 
+		/**
+		 * ChartState 2.0
+		 */
+		this.ViewState = function(type, start, stop) {
+			var listeners = [];
+
+			function nGet(val, default_) {
+				return (val === null || val === undefined) ? default_ : val; 
+			}
+
+			this.set = function(type, start, stop) {
+
+				this.type = nGet(type, this.type);
+				this.start = nGet(start, this.start);
+				this.stop = nGet(stop, this.stop);
+
+				for (var i = listeners.length - 1; i >= 0; i--) {
+					listeners[i](this);
+				};
+			}
+
+			/**
+			 * Listen for state changes.
+			 * @param  {Function} fn The function to run.
+			 */
+			this.listen = function(fn) {
+				listeners[listeners.length] = fn;
+			}
+
+			//Initialize
+			this.set(
+				nGet(type, 0),
+				nGet(start, MoneyMan.TimeUtils.now() - MoneyMan.TimeUtils.MONTH),
+				nGet(stop, MoneyMan.TimeUtils.now()));
+
+		}
+
 		this.HistoryChartApi = new function() {
-			var base = "/api/stats/history"
+			var base = "/api/stats/history";
 
 			this.dataFromState = function(state, callback) {
 				var url = [base, state.type, state.len, state.duration].join('/');
@@ -71,7 +116,7 @@ var MoneyMan = (function() {
 		};
 
 		this.TypeChartApi = new function() {
-			var base = "/api/stats/spending_by_type"
+			var base = "/api/stats/spending_by_type";
 
 			this.dataFromState = function(state, callback) {
 				var url = [base, state.len, state.duration].join('/');
@@ -82,14 +127,42 @@ var MoneyMan = (function() {
 		};
 
 		this.HistogramApi = new function() {
-			var base = "/api/stats/histogram"
+			var BASE = "/api/stats/histogram";
 
 			this.dataFromState = function(state, callback) {
-				var url = [base, state.len, state.duration].join('/');
+				if(!state instanceof MoneyMan.ViewState) {
+					throw new Exception("HistogramApi does only support ViewState");
+				}
+				console.log(state);
+				1/2;
+				var url = [BASE, state.type, state.start, state.stop].join('/');
 				$.getJSON(url, callback);
 			}
 			return this;
 
+		};
+
+		this.TimeUtils = new function() {
+			this.HOUR = 3600;
+			this.DAY = this.HOUR * 24;
+			this.WEEK = this.DAY * 7;
+			this.MONTH = this.DAY * 31;
+			this.YEAR = this.DAY * 365;
+
+			//Return now as unix timestamp in seconds
+			this.now = function() {
+				return parseInt((new Date()).getTime() / 1000);
+			};
+
+			/**
+			 * Get a timespan between span ago and now
+			 * @param  {[type]} span The timespan
+			 * @return {[type]}      The timestamps as a list.
+			 */
+			this.nowDelta = function(span) {
+				var now = this.now();
+				return [now - span, now];
+			};
 		};
 	};
 })();

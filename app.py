@@ -131,7 +131,7 @@ def details():
 @app.route("/histogram")
 @login_required
 def view_histogram():
-    return render_template('histogram.html')
+    return render_template('histogram.html', types=transactionTypes)
 
 @app.route("/pies")
 @login_required
@@ -244,10 +244,11 @@ def api_cool(begin, end):
 def spending_by_type(duration, length):
     return jsonify(results = stats.get_sum_by_type(query_db, length, duration))
 
-@app.route("/api/stats/histogram/<int:duration>/<int:length>")
+@app.route("/api/stats/histogram/<int:type_>/<int:start>/<int:stop>")
 @login_required
-def histogram(duration, length):
-    return jsonify(stats.get_histogram(query_db, length, duration))
+def histogram(type_, start, stop):
+    return jsonify(stats.get_histogram(query_db, type_, start, stop))
+
 
 
 if __name__ == '__main__':

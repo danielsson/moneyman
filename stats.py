@@ -173,7 +173,7 @@ def get_sum_by_type(db_query, num_time, time_len):
     ]
     return retval
 
-def get_histogram(db_query, num_time, time_len):
+def get_histogram_old(db_query, num_time, time_len):
     """Return account balance history for the specified time frame.
     The balance history will be adjusted for the opening balance
     fot that timeframe"""
@@ -203,6 +203,56 @@ def get_histogram(db_query, num_time, time_len):
         "xScale": "time",
         "yScale": "linear",
         "type": "line",
+        "main": [
+            {"data": data}
+        ],
+    }
+
+    return retval
+
+def get_histogram(db_query, type_, start, stop):
+    """Return account balance history for the specified time frame.
+    The balance history will be adjusted for the opening balance
+    fot that timeframe"""
+
+    bindings = [type_, start, stop]
+
+    if(type_ == 0):
+        #Special case: get all
+        bindings = [start, stop]
+        #This ensures that we begin at the correct number
+        initial_value = db_query("SELECT SUM(amount) as S FROM transactions WHERE time < ?;", [bindings[0]], True)['S']
+
+        res = db_query("SELECT SUM(amount) as amount, time FROM transactions WHERE time BETWEEN ? AND ? GROUP BY time ORDER BY time ASC;", bindings)
+
+    else:
+        bindings = [type_, start, stop]
+        #This ensures that we begin at the correct number
+        initial_value = db_query("SELECT SUM(amount) as S FROM transactions WHERE type = ? AND time < ?;", bindings[0:2], True)['S']
+
+        res = db_query("SELECT SUM(amount) as amount, time FROM transactions WHERE type = ? AND time BETWEEN ? AND ? GROUP BY time ORDER BY time ASC;", bindings)
+
+    if initial_value == None:
+        initial_value = 0
+
+    
+
+    data = [{"x": start, "y": initial_value}]
+
+    for i, row in enumerate(res):
+        x = row['time'];
+        y = int(row['amount'] + data[i]['y'])
+
+        data.append({
+            "x": x,
+            "y": y
+        })
+
+    retval = {
+        "xScale": "time",
+        "yScale": "linear",
+        "type": "line",
+        "transactionType": type_,
         "main": [
             {"data": data}
         ],

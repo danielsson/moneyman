@@ -11,7 +11,7 @@ $(document).ready(function() {
 	var state = new MoneyMan.ChartState();
 	var detailChart = new MoneyMan.DetailChart(state, MoneyMan.HistoryChartApi);
 
-	$btnTypes = $('#navTypes').find('a');
+	var $btnTypes = $('#navTypes').find('a');
 
 	$btnTypes.eq(0).parent().addClass('active');
 
@@ -24,19 +24,19 @@ $(document).ready(function() {
 		setState(parseInt($this.attr('data-typeid')), false, false);
 	});
 
-	$periodSelector = $('#selectPeriod');
+	var $periodSelector = $('#selectPeriod');
 
 	$periodSelector.change(function() {
 		$this = $(this);
 
-		parts = $this.val().split(',');
+		var parts = $this.val().split(',');
 
 		setState(false, parseInt(parts[0]), parseInt(parts[1]));
 	});
 
 
 	if(window.location.hash.length) {
-		parts = window.location.hash.substr(1).split(",");
+		var parts = window.location.hash.substr(1).split(",");
 		try {
 			state.set(parts[0] || state.type, parts[1] || state.len, parts[2] || state.duration)
 

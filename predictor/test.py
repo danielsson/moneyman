@@ -15,6 +15,8 @@ class PredictorTest(unittest.TestCase):
 	def tearDown(self):
 		if(isfile(self.TEST_PERS_FILE)):
 			os.remove(self.TEST_PERS_FILE)
+			for i in range(1,5):
+				os.remove(self.TEST_PERS_FILE + "_0" + str(i) + ".npy")
 
 	def test_fit(self):
 		self.clf.fit(self.TEST_DATA, self.TEST_TYPE)
