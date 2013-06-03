@@ -108,7 +108,7 @@ var MoneyMan = (function() {
 			var base = "/api/stats/history";
 
 			this.dataFromState = function(state, callback) {
-				var url = [base, state.type, state.len, state.duration].join('/');
+				var url = [base, state.type, state.start, state.stop].join('/');
 				$.getJSON(url, callback);
 			}
 			return this;
@@ -133,8 +133,6 @@ var MoneyMan = (function() {
 				if(!state instanceof MoneyMan.ViewState) {
 					throw new Exception("HistogramApi does only support ViewState");
 				}
-				console.log(state);
-				1/2;
 				var url = [BASE, state.type, state.start, state.stop].join('/');
 				$.getJSON(url, callback);
 			}
@@ -149,6 +147,16 @@ var MoneyMan = (function() {
 			this.MONTH = this.DAY * 31;
 			this.YEAR = this.DAY * 365;
 
+			this.getTimeSpans = function () {
+				return { //This is just beautiful...
+			        "week": this.nowDelta(this.WEEK),
+			        "month": this.nowDelta(this.MONTH),
+			        "2months": this.nowDelta(2 * this.MONTH),
+			        "6months": this.nowDelta(6 * this.MONTH),
+			        "year": this.nowDelta(this.YEAR)
+		    	};
+		    };
+
 			//Return now as unix timestamp in seconds
 			this.now = function() {
 				return parseInt((new Date()).getTime() / 1000);
@@ -157,11 +165,11 @@ var MoneyMan = (function() {
 			/**
 			 * Get a timespan between span ago and now
 			 * @param  {[type]} span The timespan
-			 * @return {[type]}      The timestamps as a list.
+			 * @return {[type]}      The timestamps as a dict.
 			 */
 			this.nowDelta = function(span) {
 				var now = this.now();
-				return [now - span, now];
+				return {start: now - span, stop: now};
 			};
 		};
 	};

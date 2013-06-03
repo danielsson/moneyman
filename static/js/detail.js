@@ -2,14 +2,11 @@
 
 $(document).ready(function() {
 
-	function setState(t,l,d) {
-		state.set(t,l,d);
+	var timespans = MoneyMan.TimeUtils.getTimeSpans();
 
-		detailChart.load();
-	}
-
-	var state = new MoneyMan.ChartState();
+	var state = new MoneyMan.ViewState();
 	var detailChart = new MoneyMan.DetailChart(state, MoneyMan.HistoryChartApi);
+	detailChart.setState(state);
 
 	var $btnTypes = $('#navTypes').find('a');
 
@@ -21,29 +18,26 @@ $(document).ready(function() {
 
 		$this.parent().addClass('active').siblings().removeClass('active');
 
-		setState(parseInt($this.attr('data-typeid')), false, false);
+		state.set(parseInt($this.attr('data-typeid')), null, null);
 	});
 
 	var $periodSelector = $('#selectPeriod');
 
 	$periodSelector.change(function() {
-		$this = $(this);
-
-		var parts = $this.val().split(',');
-
-		setState(false, parseInt(parts[0]), parseInt(parts[1]));
+		var span = timespans[$(this).val()];
+		window.span = span;
+		state.set(null, span.start, span.stop);
 	});
 
 
 	if(window.location.hash.length) {
 		var parts = window.location.hash.substr(1).split(",");
 		try {
-			state.set(parts[0] || state.type, parts[1] || state.len, parts[2] || state.duration)
+			state.set(parts[0] || state.type, parts[1] || state.start, parts[2] || state.stop)
 
 			$btnTypes.eq(state.type).parent().addClass('active').siblings().removeClass('active');
 		} catch (e) {
-			state = new ChartState();
-			detailChart.state = state;
+			state = new MoneyMan.ViewState();
 			console.log(e)
 		}
 

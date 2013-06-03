@@ -1,14 +1,11 @@
-import sqlite3
-from flask import Flask, request, session, g, redirect, url_for
-from flask import abort, render_template, flash, jsonify
-from flask.ext.login import (LoginManager, current_user, login_required,
-                            login_user, logout_user, UserMixin, AnonymousUser,
-                            confirm_login, fresh_login_required)
+from flask import *
+from flask.ext.login import *
 
 import os, time, datetime, string
 
-
+from database import *
 from importer import import_csv
+from api1 import api1
 from predictor.classifier_utils import transactionTypes, get_month_id
 import stats
 import config
@@ -19,37 +16,7 @@ app.config.from_object(config.DevConfig)
 login_manager = LoginManager()
 login_manager.login_view = "login"
 
-class User(UserMixin):
-    def __init__(self, name, id, active=True):
-        self.name = name
-        self.id = unicode(id)
-        self.active = active
 
-    def is_active(self):
-        return self.active
-
-    @staticmethod
-    def byId(id):
-        res = query_db("SELECT * FROM users WHERE id=? LIMIT 1;", [id], True)
-
-        if res == None:
-            return None
-
-        return User(res['username'], res['id'])
-
-    @staticmethod
-    def byLogin(username, password):
-        res = query_db("SELECT * FROM users WHERE username=? AND password=? LIMIT 1;", [username, password], True)
-
-        if res == None:
-            return None
-
-        return User(res['username'], res['id'])
-
-
-
-    def get_id(self):
-        return self.id;
 
 @login_manager.user_loader
 def load_user(i):
@@ -57,19 +24,6 @@ def load_user(i):
     
 login_manager.init_app(app)
 
-
-
-def connect_db():
-    return sqlite3.connect(app.config['DATABASE'])
-
-def query_db(query, args=(), one=False):
-    if not hasattr(g, "db"):
-        g.db = connect_db()
-
-    cur = g.db.execute(query, args)
-    rv = [dict((cur.description[idx][0], value)
-           for idx, value in enumerate(row)) for row in cur.fetchall()]
-    return (rv[0] if rv else None) if one else rv
 
 @app.before_request
 def before_request():
@@ -229,26 +183,8 @@ def adjust_type():
 
     return redirect(url_for("list"))
 
-@app.route("/api/stats/history/<int:etype>/<int:duration>/<int:length>")
-@login_required
-def api_stats(etype, duration, length):
-    return jsonify(stats.get_history_for_type(query_db, etype, length, duration))
 
-@app.route("/api/stats/cool/<int:begin>/<int:end>")
-@login_required
-def api_cool(begin, end):
-    return jsonify(stats.some_cool_stats(query_db, begin, end))
-
-@app.route("/api/stats/spending_by_type/<int:duration>/<int:length>")
-@login_required
-def spending_by_type(duration, length):
-    return jsonify(results = stats.get_sum_by_type(query_db, length, duration))
-
-@app.route("/api/stats/histogram/<int:type_>/<int:start>/<int:stop>")
-@login_required
-def histogram(type_, start, stop):
-    return jsonify(stats.get_histogram(query_db, type_, start, stop))
-
+app.register_blueprint(api1, url_prefix="/api")
 
 
 if __name__ == '__main__':

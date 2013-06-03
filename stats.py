@@ -28,25 +28,23 @@ def get_monthly_spending(db_query, num_months):
 
     return retval
 
-def get_history_for_type(db_query, type, num_time, time_len):
+def get_history_for_type(db_query, type_, start, stop):
     """Return the detailed transaction history for the specified
     type under the specified time frame. The data will have internal
     zero padding on non-activity dates due to limitations in the
     front end of the application. If the time frame spans a period
     longer than 70 days, data will be grouped by week."""
 
-    now = long(time())
-    breaking_point = now - time_len * num_time
 
     #Special case: 0 = all types
-    if type == 0:
-        query = "SELECT SUM(amount) as y, AVG(time) as atime FROM transactions WHERE time > ? GROUP BY %s ORDER BY atime ASC;"
-        bindings = [breaking_point]
+    if type_ == 0:
+        query = "SELECT SUM(amount) as y, AVG(time) as atime FROM transactions WHERE time BETWEEN ? AND ? GROUP BY %s ORDER BY atime ASC;"
+        bindings = [start, stop]
     else:
-        query = "SELECT SUM(amount) as y, AVG(time) as atime FROM transactions WHERE time > ? AND type = ? GROUP BY %s ORDER BY atime ASC;"
-        bindings = [breaking_point, type]
+        query = "SELECT SUM(amount) as y, AVG(time) as atime FROM transactions WHERE time BETWEEN ? AND ? AND type = ? GROUP BY %s ORDER BY atime ASC;"
+        bindings = [start, stop, type_]
 
-    if time_len * num_time < 3600*24*70:
+    if stop - start < 3600*24*70:
         #If the period is less than two months, display daily
         query = query % "time"
     else:
@@ -66,7 +64,7 @@ def get_history_for_type(db_query, type, num_time, time_len):
             while lastdate < point['atime']:
                 data.append({"x": lastdate, "y": 0})
 
-                if time_len * num_time < 3600*24*70:
+                if stop - start < 3600*24*70:
                     lastdate = lastdate + 3600 * 24
                 else:
                     lastdate = lastdate + 3600*24*70
@@ -89,10 +87,10 @@ def get_history_for_type(db_query, type, num_time, time_len):
     return retval
 
 
-def get_detailed_history_all_types(db_query, num_time, time_len):
+def get_detailed_history_all_types(db_query, start, stop):
     out = []
     for i in range(1, 8):
-        out.append(get_history_for_type(db_query, i, num_time, time_len))
+        out.append(get_history_for_type(db_query, i, start, stop))
 
     return out
 
