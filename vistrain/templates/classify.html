@@ -1,0 +1,86 @@
+{% extends "training_layout.html" %}
+
+
+{% block body %}
+<div class="row">
+	<div class="span3">
+
+		<p class="lead text-success">Classified items:</p>
+	</div>
+	<div class="span9">
+		<table class="table" id="doneItems">
+			<thead>
+				<tr>
+					<th>Date</th>
+					<th>Message</th>
+					<th>Amount</th>
+					<th>Type</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr>
+				</tr>
+			</tbody>
+		</table>
+
+	</div>
+</div>
+<div class="row">
+	<div class="span3">
+
+		<p class="lead text-info">Current items:</p>
+	</div>
+	<div class="span6">
+		<table class="table" id="doneItems">
+			<thead>
+				<tr>
+					<th>Date</th>
+					<th>Message</th>
+					<th>Amount</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr>
+					<td>2012-10-31</td>
+				</tr>
+			</tbody>
+		</table>
+
+	</div>
+</div>
+<div class="row">
+	<div class="span3">
+
+		<p class="lead muted">Remaining items:</p>
+	</div>
+	<div class="span9">
+		<table class="table" id="remainingItems">
+			<thead>
+				<tr>
+					<th>Date</th>
+					<th>Message</th>
+					<th>Amount</th>
+					<th>Type</th>
+				</tr>
+			</thead>
+			<tbody>
+				{% if reader %}
+					{% for row in reader %}
+						<tr>
+							<td>{{ row[0] }}</td>
+							<td>{{ row[1].decode("UTF-8") }}</td>
+							<td>{{ row[2] }}</td>
+							<td></td>
+						</tr>
+					{% endfor %}
+				{% else %}
+					<p>
+						There has been an internal error.
+					</p>
+				{% endif %}
+			</tbody>
+		</table>
+
+	</div>
+</div>
+{% endblock %}

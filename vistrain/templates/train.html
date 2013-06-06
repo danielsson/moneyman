@@ -1,0 +1,46 @@
+{% extends "training_layout.html" %}
+
+
+{% block body %}
+<div class="row">
+	<div class="span12">
+
+		<h2>Train the predictor</h2>
+	</div>
+</div>
+<div class="row">
+	<div class="span8">
+		<p>
+			In order to be able to predict categories for your transactions,
+			you'll need to <em>train</em> the predictor. This is done by
+			manually assigning categories to your purchases. The machine
+			learning system will automagically learn how to categorize your
+			transactions.
+		</p>
+
+		<h3>Please upload a sample of your transactions</h3>
+
+		<p>
+			The accepted format is a CSV-file in the following format:
+			<pre>2013-04-31, Transaction message, amount</pre>
+			We support all separator characters.
+
+			About 100 rows will be selected for classification.
+
+		</p>
+	</div>
+	<div class="span4">
+		<form action="." method="POST" enctype="multipart/form-data">
+			
+			<div class="well">
+				<input type="file" name="file" required/>
+
+			</div>
+
+			
+            <input type="submit" class="btn btn-primary btn-block">
+		</form>
+	</div>
+
+</div>
+{% endblock %}
