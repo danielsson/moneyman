@@ -41,4 +41,4 @@ class TransactionClassifier :
 
 
     def persist(self):
-        joblib.dump(self.classifier, self.persisted_filename)
+        joblib.dump(self.classifier, self.persisted_filename, 3)

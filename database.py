@@ -2,6 +2,7 @@ import sqlite3
 from flask.ext.login import UserMixin
 from flask import g
 from app import app
+from os import path
 
 def connect_db():
     return sqlite3.connect(app.config['DATABASE'])
@@ -46,3 +47,6 @@ class User(UserMixin):
 
     def get_id(self):
         return self.id;
+
+    def get_user_clf_path(self):
+        return path.join(app.config['CLF_STORAGE'], str(self.id) + "_clf.pkl")

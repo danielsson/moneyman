@@ -103,13 +103,14 @@ def upload():
             file.save(path)
 
             try:
-                import_csv(path, "predictor/classifier.pkl", current_user.id, g.db)
+                import_csv(path, current_user.get_user_clf_path(), current_user.id, g.db)
                 flash("CSV import successful.")
 
                 return redirect(url_for("list"))
 
             except Exception as e:
                 flash("Error importing csv. %s" % e)
+                raise
 
             finally:
                 os.remove(path)
@@ -188,4 +189,4 @@ app.register_blueprint(api1, url_prefix="/api")
 
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=app.config['DEBUG'])
