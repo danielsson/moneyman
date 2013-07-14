@@ -1,0 +1,59 @@
+<!doctype html>
+<html>
+<head>
+<title>Train</title>
+<link rel=stylesheet type=text/css href="{{ url_for('static', filename='css/bootstrap.min.css') }}">
+<link rel=stylesheet type=text/css href="{{ url_for('static', filename='css/xcharts.css') }}">
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+<script src="http://d3js.org/d3.v2.min.js"></script>
+<script src="{{ url_for('static', filename='js/bootstrap.min.js') }}" ></script>
+<script src="{{ url_for('static', filename='js/xcharts.min.js') }}" > </script>
+<script src="{{ url_for('static', filename='js/moneyman.js') }}" > </script>
+{% block head %}{% endblock %}
+<style>
+  
+  .type1 .badge {background-color: #295EFF;} /* Takeout */
+  .type2 .badge {background-color: #FF66D9;} /* Clothes */
+  .type3 .badge {background-color: #66D9FF;} /* Coffee */
+  .type4 .badge {background-color: #FFC929;} /* Apartment */
+  .type5 .badge {background-color: #222673;} /* Beer */
+  .type6 .badge {background-color: #8CFF66;} /* Deposits */
+  .type6 .badge {background-color: #FFD966;} /* Other */
+
+  figure {margin: 0;}
+
+  .span6 figure, .span4 figure {height: 150px;}
+
+  .large_chart {
+    height: 400px;
+  }
+
+  h1 {
+    font-weight: normal;
+    font-family: Verdana, sans-serif;
+    font-size: 28px;
+  }
+
+  .masthead > ul {
+    margin-top: 6px;
+  }
+
+</style>
+</head>
+<body>
+<div class=page>
+
+  <div class="container">
+    <div class="page-header">
+      <h1>Training dojo</h1>
+    </div>
+
+    {% for message in get_flashed_messages() %}
+      <div class="alert alert-info">{{ message }}</div>
+    {% endfor %}
+
+    {% block body %}{% endblock %}
+  </div>
+</div>
+</body>
+</html>

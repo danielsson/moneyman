@@ -1,11 +1,13 @@
 from flask import *
 from flask.ext.login import *
-
 import os, time, datetime, string
+
 
 from database import *
 from importer import import_csv
 from api1 import api1
+from vistrain.visual_trainer import visual_trainer
+
 from predictor.classifier_utils import transactionTypes, get_month_id
 import stats
 import config
@@ -186,6 +188,7 @@ def adjust_type():
 
 
 app.register_blueprint(api1, url_prefix="/api")
+app.register_blueprint(visual_trainer, url_prefix="/dojo")
 
 
 if __name__ == '__main__':
